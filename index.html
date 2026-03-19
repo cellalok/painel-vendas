@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Archavon Island - Painel de Vendas</title>
+    <style>
+        :root { --azul: #1b4965; --laranja: #f3722c; --areia: #f9f1dc; --verde: #2a9d8f; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--azul); color: #333; display: flex; justify-content: center; padding: 20px; }
+        .caixa { background: var(--areia); padding: 25px; border-radius: 15px; width: 100%; max-width: 450px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 3px solid var(--laranja); }
+        .header { text-align: center; margin-bottom: 20px; }
+
+        .logo {
+            width: 190px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; border-left: 5px solid var(--laranja); }
+        input { width: 50px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
+        button { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .btn-calc { background: var(--laranja); color: white; }
+        .btn-copy { background: var(--azul); color: white; }
+        .resumo { margin-top: 20px; background: white; padding: 15px; border-radius: 10px; font-size: 0.9em; }
+        .resumo p { margin: 5px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 3px; }
+        .destaque { font-weight: bold; color: var(--azul); }
+        .totais-itens { font-size: 0.8em; color: #666; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="caixa">
+    <div class="header">
+        <img src="logo.png" alt="Logo" class="logo">
+    </div>
+    
+    <div id="formulario">
+        <div class="item-row"><span>Elixir de Saciedade</span><input type="number" id="i1" value="0" min="0"></div>
+        <div class="item-row"><span>Ensopado Fortificador</span><input type="number" id="i2" value="0" min="0"></div>
+        <div class="item-row"><span>Elixir dos Sonhos</span><input type="number" id="i3" value="0" min="0"></div>
+        <div class="item-row"><span>Elixir de Limpeza</span><input type="number" id="i4" value="0" min="0"></div>
+    </div>
+
+    <button class="btn-calc" onclick="processarVenda()">Adicionar ao Turno</button>
+    <button class="btn-copy" onclick="copiarDiscord()">Copiar Recibo Discord</button>
+
+    <div class="resumo">
+        <div class="totais-itens">
+            <strong>Vendidos no Turno:</strong><br>
+            Saciedade: <span id="t1">0</span> | Ensopado: <span id="t2">0</span><br>
+            Sonhos: <span id="t3">0</span> | Limpeza: <span id="t4">0</span>
+        </div>
+
+        <!-- NOVA LINHA -->
+        <p>Última Venda: <span class="destaque" id="vUltima">R$ 0,00</span></p>
+
+        <p>Total Bruto: <span class="destaque" id="vBruto">R$ 0,00</span></p>
+        <p>Repasse (30%): <span style="color:red" id="vRepasse">R$ 0,00</span></p>
+        <p>Seu Lucro (70%): <span style="color:green" id="vLucro">R$ 0,00</span></p>
+    </div>
+    
+    <button onclick="resetar()" style="background:none; color:#bbb; font-size:9px; margin-top:15px;">Reiniciar Turno</button>
+</div>
+
+<script>
+    let dados = { sac: 0, ens: 0, son: 0, lim: 0, total: 0 };
+    let ultimaVenda = 0;
+
+    function processarVenda() {
+        const q1 = parseInt(document.getElementById('i1').value) || 0;
+        const q2 = parseInt(document.getElementById('i2').value) || 0;
+        const q3 = parseInt(document.getElementById('i3').value) || 0;
+        const q4 = parseInt(document.getElementById('i4').value) || 0;
+
+        const valorVenda = (q1*90) + (q2*90) + (q3*500) + (q4*500);
+
+        ultimaVenda = valorVenda;
+
+        dados.sac += q1; 
+        dados.ens += q2; 
+        dados.son += q3; 
+        dados.lim += q4;
+        dados.total += valorVenda;
+
+        atualizarInterface();
+        document.querySelectorAll('input').forEach(i => i.value = 0);
+    }
+
+    function atualizarInterface() {
+        document.getElementById('t1').innerText = dados.sac;
+        document.getElementById('t2').innerText = dados.ens;
+        document.getElementById('t3').innerText = dados.son;
+        document.getElementById('t4').innerText = dados.lim;
+
+        document.getElementById('vUltima').innerText = `R$ ${ultimaVenda.toFixed(2)}`;
+        document.getElementById('vBruto').innerText = `R$ ${dados.total.toFixed(2)}`;
+        document.getElementById('vRepasse').innerText = `R$ ${(dados.total * 0.3).toFixed(2)}`;
+        document.getElementById('vLucro').innerText = `R$ ${(dados.total * 0.7).toFixed(2)}`;
+    }
+
+    function copiarDiscord() {
+        const rep = dados.total * 0.3;
+        const luc = dados.total * 0.7;
+
+        const agora = new Date();
+        const data = agora.toLocaleDateString('pt-BR');
+        const hora = agora.toLocaleTimeString('pt-BR');
+
+        const texto = `\`\`\`md
+# RELATÓRIO DE VENDAS - THE ARCHAVON ISLAND
+> Data: ${data}
+> Hora: ${hora}
+
+[ QUANTIDADES VENDIDAS ]
+* Elixir de Saciedade: ${dados.sac} un.
+* Ensopado Fortificador: ${dados.ens} un.
+* Elixir dos Sonhos: ${dados.son} un.
+* Elixir de Limpeza: ${dados.lim} un.
+
+[ FINANCEIRO ]
+Última Venda: R$ ${ultimaVenda.toFixed(2)}
+Total Bruto: R$ ${dados.total.toFixed(2)}
+Repasse Restaurante (30%): R$ ${rep.toFixed(2)}
+Lucro do Vendedor (70%): R$ ${luc.toFixed(2)}
+---------------------------------------
+Vendedor: [NOME DO FUNCIONÁRIO]
+\`\`\``;
+
+        navigator.clipboard.writeText(texto);
+        alert("Recibo pronto para colar no Discord!");
+    }
+
+    function resetar() { 
+        if(confirm("Limpar turno?")) { 
+            dados = {sac:0, ens:0, son:0, lim:0, total:0}; 
+            ultimaVenda = 0;
+            atualizarInterface(); 
+        } 
+    }
+</script>
+</body>
+</html>
