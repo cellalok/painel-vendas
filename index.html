@@ -25,6 +25,12 @@
         .resumo p { margin: 5px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 3px; }
         .destaque { font-weight: bold; color: var(--azul); }
         .totais-itens { font-size: 0.8em; color: #666; margin-bottom: 15px; }
+
+        /* COR AZUL MARINHO PARA ÚLTIMA VENDA */
+        .ultima {
+            color: #000080;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -51,8 +57,7 @@
             Sonhos: <span id="t3">0</span> | Limpeza: <span id="t4">0</span>
         </div>
 
-        <!-- NOVA LINHA -->
-        <p>Última Venda: <span class="destaque" id="vUltima">R$ 0,00</span></p>
+        <p>Última Venda: <span class="ultima" id="vUltima">R$ 0,00</span></p>
 
         <p>Total Bruto: <span class="destaque" id="vBruto">R$ 0,00</span></p>
         <p>Repasse (30%): <span style="color:red" id="vRepasse">R$ 0,00</span></p>
