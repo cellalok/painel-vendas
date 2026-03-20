@@ -31,6 +31,17 @@
             font-weight: bold;
         }
 
+        /* NOVOS ESTILOS */
+        .repasse {
+            color: red;
+            font-weight: bold;
+        }
+
+        .lucro {
+            color: green;
+            font-weight: bold;
+        }
+
         .tempo-box {
             margin-top: 20px;
             background: #fff;
@@ -78,8 +89,8 @@
         <p>Última Venda: <span class="ultima" id="vUltima">R$ 0,00</span></p>
 
         <p>Total Bruto: <span class="destaque" id="vBruto">R$ 0,00</span></p>
-        <p>Repasse (30%): <span style="color:red" id="vRepasse">R$ 0,00</span></p>
-        <p>Seu Lucro (70%): <span style="color:green" id="vLucro">R$ 0,00</span></p>
+        <p>Repasse (30%): <span class="repasse" id="vRepasse">R$ 0,00</span></p>
+        <p>Seu Lucro (70%): <span class="lucro" id="vLucro">R$ 0,00</span></p>
     </div>
 
     <div class="tempo-box">
@@ -142,9 +153,7 @@
         let inicioMin = h1 * 60 + m1;
         let fimMin = h2 * 60 + m2;
 
-        if (fimMin < inicioMin) {
-            fimMin += 24 * 60;
-        }
+        if (fimMin < inicioMin) fimMin += 24 * 60;
 
         let total = fimMin - inicioMin;
         let horas = Math.floor(total / 60);
