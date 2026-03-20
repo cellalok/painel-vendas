@@ -17,7 +17,7 @@
         }
 
         .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; border-left: 5px solid var(--laranja); }
-        input { width: 50px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
+        input { width: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
         button { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         .btn-calc { background: var(--laranja); color: white; }
         .btn-copy { background: var(--azul); color: white; }
@@ -26,10 +26,28 @@
         .destaque { font-weight: bold; color: var(--azul); }
         .totais-itens { font-size: 0.8em; color: #666; margin-bottom: 15px; }
 
-        /* ÚLTIMA VENDA EM AZUL MARINHO */
         .ultima {
             color: #000080;
             font-weight: bold;
+        }
+
+        .tempo-box {
+            margin-top: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .tempo-box h3 {
+            margin: 0 0 10px 0;
+            color: var(--azul);
+            font-size: 1em;
+        }
+        .tempo-row {
+            display: flex;
+            gap: 10px;
+        }
+        .tempo-row input {
+            width: 100%;
         }
     </style>
 </head>
@@ -63,6 +81,15 @@
         <p>Repasse (30%): <span style="color:red" id="vRepasse">R$ 0,00</span></p>
         <p>Seu Lucro (70%): <span style="color:green" id="vLucro">R$ 0,00</span></p>
     </div>
+
+    <div class="tempo-box">
+        <h3>⏱️ Tempo Trabalhado</h3>
+        <div class="tempo-row">
+            <input type="time" id="inicio" oninput="calcularTempo()">
+            <input type="time" id="fim" oninput="calcularTempo()">
+        </div>
+        <p style="margin-top:10px;">Total: <strong id="resultadoTempo">00:00</strong></p>
+    </div>
     
     <button onclick="resetar()" style="background:none; color:#bbb; font-size:9px; margin-top:15px;">Reiniciar Turno</button>
 </div>
@@ -88,7 +115,7 @@
         dados.total += valorVenda;
 
         atualizarInterface();
-        document.querySelectorAll('input').forEach(i => i.value = 0);
+        document.querySelectorAll('input[type=number]').forEach(i => i.value = 0);
     }
 
     function atualizarInterface() {
@@ -101,6 +128,30 @@
         document.getElementById('vBruto').innerText = `R$ ${dados.total.toFixed(2)}`;
         document.getElementById('vRepasse').innerText = `R$ ${(dados.total * 0.3).toFixed(2)}`;
         document.getElementById('vLucro').innerText = `R$ ${(dados.total * 0.7).toFixed(2)}`;
+    }
+
+    function calcularTempo() {
+        const inicio = document.getElementById('inicio').value;
+        const fim = document.getElementById('fim').value;
+
+        if (!inicio || !fim) return;
+
+        let [h1, m1] = inicio.split(':').map(Number);
+        let [h2, m2] = fim.split(':').map(Number);
+
+        let inicioMin = h1 * 60 + m1;
+        let fimMin = h2 * 60 + m2;
+
+        if (fimMin < inicioMin) {
+            fimMin += 24 * 60;
+        }
+
+        let total = fimMin - inicioMin;
+        let horas = Math.floor(total / 60);
+        let minutos = total % 60;
+
+        document.getElementById('resultadoTempo').innerText =
+            `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}`;
     }
 
     function copiarDiscord() {
@@ -140,6 +191,7 @@ Vendedor: [NOME DO FUNCIONÁRIO]
             dados = {sac:0, ens:0, son:0, lim:0, total:0}; 
             ultimaVenda = 0;
             atualizarInterface(); 
+            document.getElementById('resultadoTempo').innerText = "00:00";
         } 
     }
 </script>
